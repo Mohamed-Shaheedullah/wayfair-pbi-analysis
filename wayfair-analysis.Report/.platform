@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "wayfair-analysis"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "20d2449b-5acc-4b2f-aa4c-f048906b4e06"
+  }
+}
