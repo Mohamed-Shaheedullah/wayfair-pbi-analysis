@@ -13,9 +13,11 @@ expression orders =
 		let
 		  Source = Csv.Document(File.Contents("C:\Users\conif\Documents\Projects\Data-Career-School\ecommerce-sales-analysis-datasets\ecommerce-sales-analysis\data\orders.csv"), [Delimiter = ",", Columns = 7, QuoteStyle = QuoteStyle.None]),
 		  #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
-		  #"Changed column type" = Table.TransformColumnTypes(#"Promoted headers", {{"order_id", Int64.Type}, {"customer_id", Int64.Type}, {"order_date", type datetime}, {"status", type text}, {"payment_method", type text}, {"discount_code", type text}, {"shipping_fee", type number}}, "en-US")
+		  #"Changed column type" = Table.TransformColumnTypes(#"Promoted headers", {{"order_id", Int64.Type}, {"customer_id", Int64.Type}, {"order_date", type datetime}, {"status", type text}, {"payment_method", type text}, {"discount_code", type text}, {"shipping_fee", type number}}, "en-US"),
+		  #"Removed duplicates" = Table.Distinct(#"Changed column type", {"order_id", "customer_id", "order_date", "status", "payment_method", "discount_code", "shipping_fee"}),
+		  #"Filtered rows" = Table.SelectRows(#"Removed duplicates", each ([status] = "completed"))
 		in
-		  #"Changed column type"
+		  #"Filtered rows"
 	lineageTag: 99da5ade-ccbe-4037-a714-b7a98dcc1622
 
 	annotation PBI_ResultType = Table
