@@ -13,7 +13,20 @@
             "x": 0,
             "y": 0
           },
-          "nodeIndex": "Merge",
+          "nodeIndex": "Dates",
+          "nodeLineageTag": "494e4cbc-fe72-4435-9bf0-c809f576893f",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 274,
+            "y": 191
+          },
+          "nodeIndex": "Order Info",
           "nodeLineageTag": "b6ab3125-d161-4f57-98a3-be817655cdd5",
           "size": {
             "height": 152,

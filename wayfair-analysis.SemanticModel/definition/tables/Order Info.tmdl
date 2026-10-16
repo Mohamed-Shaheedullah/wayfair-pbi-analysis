@@ -1,4 +1,4 @@
-table Merge
+table 'Order Info'
 	lineageTag: b6ab3125-d161-4f57-98a3-be817655cdd5
 
 	column order_id
@@ -22,14 +22,17 @@ table Merge
 		annotation UnderlyingDateTimeDataType = Date
 
 	column Revenue
-		dataType: string
+		dataType: decimal
+		formatString: "£"#,0.###############;-"£"#,0.###############;"£"#,0.###############
 		lineageTag: c040c055-a012-4dcf-9eb6-e5b3f0779ac4
-		summarizeBy: none
+		summarizeBy: sum
 		sourceColumn: Revenue
 
 		annotation SummarizationSetBy = Automatic
 
-	partition Merge = m
+		annotation PBI_FormatHint = {"currencyCulture":"en-GB"}
+
+	partition 'Order Info' = m
 		mode: import
 		source =
 				let
@@ -39,9 +42,11 @@ table Merge
 				  #"Grouped rows" = Table.Group(#"Added custom", {"order_id"}, {{"Sum Total Price", each List.Sum([Total Price]), type any}, {"Shipping Fee", each List.Min([shipping_fee]), type nullable number}, {"Order Date", each List.Min([order_date]), type nullable datetime}}),
 				  #"Changed column type" = Table.TransformColumnTypes(#"Grouped rows", {{"Order Date", type date}}),
 				  #"Added custom 1" = Table.AddColumn(#"Changed column type", "Revenue", each [Sum Total Price] - [Shipping Fee]),
-				  #"Removed columns" = Table.RemoveColumns(#"Added custom 1", {"Sum Total Price", "Shipping Fee"})
+				  #"Removed columns" = Table.RemoveColumns(#"Added custom 1", {"Sum Total Price", "Shipping Fee"}),
+				  #"Filtered rows" = Table.SelectRows(#"Removed columns", each ([Order Date] <> null) and ([Revenue] <> null)),
+				  #"Changed column type 1" = Table.TransformColumnTypes(#"Filtered rows", {{"Revenue", Currency.Type}})
 				in
-				  #"Removed columns"
+				  #"Changed column type 1"
 
 	annotation PBI_ResultType = Table
 

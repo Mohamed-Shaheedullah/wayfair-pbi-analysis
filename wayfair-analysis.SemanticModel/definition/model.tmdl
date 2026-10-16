@@ -9,11 +9,12 @@ model Model
 
 annotation __PBI_TimeIntelligenceEnabled = 0
 
-annotation PBI_QueryOrder = ["customers","order_items","orders","products","Merge"]
+annotation PBI_QueryOrder = ["customers","order_items","orders","products","Order Info","Dates"]
 
 annotation PBI_ProTooling = ["DevMode"]
 
-ref table Merge
+ref table 'Order Info'
+ref table Dates
 
 ref cultureInfo en-GB
 

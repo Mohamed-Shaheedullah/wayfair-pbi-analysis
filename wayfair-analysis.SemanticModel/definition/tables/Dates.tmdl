@@ -1,0 +1,73 @@
+table Dates
+	lineageTag: 494e4cbc-fe72-4435-9bf0-c809f576893f
+
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: bf2551d5-44d0-43a1-a306-b1a99a98816f
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: double
+		lineageTag: 8ed39112-df22-4d64-ae94-fe9a526eb588
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Month Number'
+		dataType: double
+		lineageTag: 715c8264-e045-4b6d-8587-b25ee5941747
+		summarizeBy: none
+		sourceColumn: Month Number
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Month
+		dataType: string
+		lineageTag: 56e6e81a-ea95-4616-926c-1c7548c8f613
+		summarizeBy: none
+		sourceColumn: Month
+		sortByColumn: 'Month Number'
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year-Month
+		dataType: string
+		lineageTag: c14a0620-2944-4267-8c4a-b3344c0333cf
+		summarizeBy: none
+		sourceColumn: Year-Month
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Dates = m
+		mode: import
+		source =
+				let
+				 Source  = List.Dates(#date(2024, 1, 1), 731, #duration(1, 0, 0, 0)),
+				  #"Converted to table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+				  #"Renamed columns" = Table.RenameColumns(#"Converted to table", {{"Column1", "Date"}}),
+				  #"Changed column type" = Table.TransformColumnTypes(#"Renamed columns", {{"Date", type date}}),
+				  #"Inserted year" = Table.AddColumn(#"Changed column type", "Year", each Date.Year([Date]), type nullable number),
+				  #"Inserted month" = Table.AddColumn(#"Inserted year", "Month", each Date.Month([Date]), type nullable number),
+				  #"Inserted month name" = Table.AddColumn(#"Inserted month", "Month name", each Date.MonthName([Date]), type nullable text),
+				  #"Renamed columns 1" = Table.RenameColumns(#"Inserted month name", {{"Month", "Month Number"}, {"Month name", "Month"}}),
+				  #"Sorted rows" = Table.Sort(#"Renamed columns 1", {{"Date", Order.Ascending}}),
+				  Year_Month = Table.AddColumn(#"Sorted rows", "Year-Month", each Text.From([Year]) & "-" & Text.PadStart(Text.From([Month Number]), 2, "0"), type text)
+				
+				in
+				  Year_Month
+
+	annotation PBI_ResultType = Table
+
