@@ -1,4 +1,12 @@
-relationship 5283edf6-6aa2-f891-2d07-a7b1d1b93ff1
-	fromColumn: 'Order Info'.'Order Date'
+relationship AutoDetected_be9e0b6f-51fd-442b-acec-cacf9c343176
+	fromColumn: order_items.order_id
+	toColumn: orders.order_id
+
+relationship AutoDetected_267fc0fa-7ba4-488b-8733-bb5e536a1a52
+	fromColumn: order_items.product_id
+	toColumn: products.product_id
+
+relationship 6c7415ae-a7f6-2608-22bc-96a233e7d712
+	fromColumn: orders.order_date
 	toColumn: Dates.Date
 

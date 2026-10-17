@@ -10,8 +10,8 @@
       "nodes": [
         {
           "location": {
-            "x": 0,
-            "y": 0
+            "x": 827.36163941535983,
+            "y": 6.12994172754631
           },
           "nodeIndex": "Dates",
           "nodeLineageTag": "494e4cbc-fe72-4435-9bf0-c809f576893f",
@@ -23,13 +23,39 @@
         },
         {
           "location": {
-            "x": 274,
-            "y": 191
+            "x": 270.18475118062986,
+            "y": 305
           },
-          "nodeIndex": "Order Info",
-          "nodeLineageTag": "b6ab3125-d161-4f57-98a3-be817655cdd5",
+          "nodeIndex": "order_items",
+          "nodeLineageTag": "192a0828-c28e-4de3-9123-16a288ea4377",
           "size": {
-            "height": 152,
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 665.36163941535983,
+            "y": 349
+          },
+          "nodeIndex": "orders",
+          "nodeLineageTag": "b2415efb-6c93-4d14-8538-c75607fdc567",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": -50
+          },
+          "nodeIndex": "products",
+          "nodeLineageTag": "46dd3527-4523-4139-bef6-5428cccb27a2",
+          "size": {
+            "height": 200,
             "width": 234
           },
           "zIndex": 0

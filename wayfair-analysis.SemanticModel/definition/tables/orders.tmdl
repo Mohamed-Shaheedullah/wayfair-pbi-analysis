@@ -1,0 +1,77 @@
+table orders
+	lineageTag: b2415efb-6c93-4d14-8538-c75607fdc567
+
+	column order_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 3d67fe43-5eda-4486-a933-b078ca7948eb
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_id
+		dataType: int64
+		formatString: 0
+		lineageTag: be9a166c-5515-4f93-87de-e5910de28778
+		summarizeBy: sum
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_date
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 517276c2-c558-476c-91e9-1b3132b5f6b8
+		summarizeBy: none
+		sourceColumn: order_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column status
+		dataType: string
+		lineageTag: 1cda7c61-6441-40f6-a592-304263bb37a0
+		summarizeBy: none
+		sourceColumn: status
+
+		annotation SummarizationSetBy = Automatic
+
+	column payment_method
+		dataType: string
+		lineageTag: aa4d25ab-c897-4131-9e0f-18dffa1e2366
+		summarizeBy: none
+		sourceColumn: payment_method
+
+		annotation SummarizationSetBy = Automatic
+
+	column discount_code
+		dataType: string
+		lineageTag: d642ed3d-fc8d-48b7-a0c0-29881c67e7de
+		summarizeBy: none
+		sourceColumn: discount_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column shipping_fee
+		dataType: double
+		lineageTag: 97108ad6-d52c-4126-91db-c236bdde6eb6
+		summarizeBy: sum
+		sourceColumn: shipping_fee
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition orders = m
+		mode: import
+		source =
+				let
+				  Source = Csv.Document(File.Contents("C:\Users\conif\Documents\Projects\Data-Career-School\ecommerce-sales-analysis-datasets\ecommerce-sales-analysis\data\orders.csv"), [Delimiter = ",", Columns = 7, QuoteStyle = QuoteStyle.None]),
+				  #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				  #"Changed column type" = Table.TransformColumnTypes(#"Promoted headers", {{"order_id", Int64.Type}, {"customer_id", Int64.Type}, {"order_date", type datetime}, {"status", type text}, {"payment_method", type text}, {"discount_code", type text}, {"shipping_fee", type number}}, "en-US"),
+				  #"Removed duplicates" = Table.Distinct(#"Changed column type", {"order_id", "customer_id", "order_date", "status", "payment_method", "discount_code", "shipping_fee"})
+				in
+				  #"Removed duplicates"
+
+	annotation PBI_ResultType = Table
+

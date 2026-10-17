@@ -13,8 +13,10 @@ annotation PBI_QueryOrder = ["customers","order_items","orders","products","Orde
 
 annotation PBI_ProTooling = ["DevMode"]
 
-ref table 'Order Info'
 ref table Dates
+ref table order_items
+ref table orders
+ref table products
 
 ref cultureInfo en-GB
 

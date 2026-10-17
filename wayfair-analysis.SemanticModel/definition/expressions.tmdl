@@ -1,38 +1,3 @@
-expression order_items =
-		let
-		  Source = Csv.Document(File.Contents("C:\Users\conif\Documents\Projects\Data-Career-School\ecommerce-sales-analysis-datasets\ecommerce-sales-analysis\data\order_items.csv"), [Delimiter = ",", Columns = 5, QuoteStyle = QuoteStyle.None]),
-		  #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
-		  #"Changed column type" = Table.TransformColumnTypes(#"Promoted headers", {{"order_id", Int64.Type}, {"product_id", Int64.Type}, {"quantity", Int64.Type}, {"unit_price", type number}, {"discount_amount", type number}}, "en-US")
-		in
-		  #"Changed column type"
-	lineageTag: 385fde60-074d-4593-865e-08b354d3a8ef
-
-	annotation PBI_ResultType = Table
-
-expression orders =
-		let
-		  Source = Csv.Document(File.Contents("C:\Users\conif\Documents\Projects\Data-Career-School\ecommerce-sales-analysis-datasets\ecommerce-sales-analysis\data\orders.csv"), [Delimiter = ",", Columns = 7, QuoteStyle = QuoteStyle.None]),
-		  #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
-		  #"Changed column type" = Table.TransformColumnTypes(#"Promoted headers", {{"order_id", Int64.Type}, {"customer_id", Int64.Type}, {"order_date", type datetime}, {"status", type text}, {"payment_method", type text}, {"discount_code", type text}, {"shipping_fee", type number}}, "en-US"),
-		  #"Removed duplicates" = Table.Distinct(#"Changed column type", {"order_id", "customer_id", "order_date", "status", "payment_method", "discount_code", "shipping_fee"}),
-		  #"Filtered rows" = Table.SelectRows(#"Removed duplicates", each ([status] = "completed"))
-		in
-		  #"Filtered rows"
-	lineageTag: 99da5ade-ccbe-4037-a714-b7a98dcc1622
-
-	annotation PBI_ResultType = Table
-
-expression products =
-		let
-		  Source = Csv.Document(File.Contents("C:\Users\conif\Documents\Projects\Data-Career-School\ecommerce-sales-analysis-datasets\ecommerce-sales-analysis\data\products.csv"), [Delimiter = ",", Columns = 5, QuoteStyle = QuoteStyle.None]),
-		  #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
-		  #"Changed column type" = Table.TransformColumnTypes(#"Promoted headers", {{"product_id", Int64.Type}, {"product_name", type text}, {"category", type text}, {"list_price", type number}, {"unit_cost", type number}}, "en-US")
-		in
-		  #"Changed column type"
-	lineageTag: 29f513a2-85c5-44e8-b945-2fb881f282a2
-
-	annotation PBI_ResultType = Table
-
 expression customers =
 		let
 		  Source = Csv.Document(File.Contents("C:\Users\conif\Documents\Projects\Data-Career-School\ecommerce-sales-analysis-datasets\ecommerce-sales-analysis\data\customers.csv"), [Delimiter = ",", Columns = 4, QuoteStyle = QuoteStyle.None]),
@@ -41,6 +6,23 @@ expression customers =
 		in
 		  #"Changed column type"
 	lineageTag: aaab3d64-dca4-4bbc-9095-e1a39347000c
+
+	annotation PBI_ResultType = Table
+
+expression 'Order Info' =
+		let
+		  Source = Table.NestedJoin(order_items, {"order_id"}, orders, {"order_id"}, "orders", JoinKind.LeftOuter),
+		  #"Expanded orders" = Table.ExpandTableColumn(Source, "orders", {"customer_id", "order_date", "status", "shipping_fee"}, {"customer_id", "order_date", "status", "shipping_fee"}),
+		  #"Added custom" = Table.AddColumn(#"Expanded orders", "Total Price", each ([quantity] * [unit_price]) - [discount_amount]),
+		  #"Grouped rows" = Table.Group(#"Added custom", {"order_id"}, {{"Sum Total Price", each List.Sum([Total Price]), type any}, {"Shipping Fee", each List.Min([shipping_fee]), type nullable number}, {"Order Date", each List.Min([order_date]), type nullable datetime}}),
+		  #"Changed column type" = Table.TransformColumnTypes(#"Grouped rows", {{"Order Date", type date}}),
+		  #"Added custom 1" = Table.AddColumn(#"Changed column type", "Revenue", each [Sum Total Price] - [Shipping Fee]),
+		  #"Removed columns" = Table.RemoveColumns(#"Added custom 1", {"Sum Total Price", "Shipping Fee"}),
+		  #"Filtered rows" = Table.SelectRows(#"Removed columns", each ([Order Date] <> null) and ([Revenue] <> null)),
+		  #"Changed column type 1" = Table.TransformColumnTypes(#"Filtered rows", {{"Revenue", Currency.Type}})
+		in
+		  #"Changed column type 1"
+	lineageTag: ebfeb769-cc97-4d11-be16-c2b3c3e75c75
 
 	annotation PBI_ResultType = Table
 
