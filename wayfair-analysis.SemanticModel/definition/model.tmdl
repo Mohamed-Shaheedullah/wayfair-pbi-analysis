@@ -9,14 +9,15 @@ model Model
 
 annotation __PBI_TimeIntelligenceEnabled = 0
 
-annotation PBI_QueryOrder = ["customers","order_items","orders","products","Order Info","Dates"]
+annotation PBI_QueryOrder = ["customers","order_items","orders","products","Order Info","Dates","_Measures"]
 
-annotation PBI_ProTooling = ["DevMode"]
+annotation PBI_ProTooling = ["DevMode","MCP-PBIModeling"]
 
 ref table Dates
 ref table order_items
 ref table orders
 ref table products
+ref table _Measures
 
 ref cultureInfo en-GB
 

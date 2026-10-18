@@ -1,0 +1,32 @@
+table _Measures
+	lineageTag: 706a9aed-fffa-4273-ab7d-72dcd8da899e
+
+	/// Sum of amount paid across the orders in filter context: line totals less discounts, plus shipping, per order. Includes all statuses.
+	measure 'Total Actual Order Price (Claude)' =
+			SUMX ( orders,
+			        SUMX ( RELATEDTABLE ( order_items ), order_items[total_price] - order_items[discount_amount] )
+			         + orders[shipping_fee] )
+		formatString: £#,0.00
+		lineageTag: ab8aa5a7-a56c-430c-82c9-74abc589b9a7
+
+	/// Average amount paid per order in filter context, net of discounts and including shipping. Includes all statuses.
+	measure 'Avg Actual Order Price' = DIVIDE ( [Total Actual Order Price (Claude)], COUNTROWS ( orders ) )
+		formatString: £#,0.00
+		lineageTag: 15802f53-485a-4f22-b8b0-79707a93c747
+
+	column Column1
+		dataType: string
+		lineageTag: 52cd5105-4498-4abc-8ac3-4ec112395476
+		summarizeBy: none
+		sourceColumn: Column1
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _Measures = m
+		mode: import
+		source =
+				let
+				  Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t])
+				in
+				  Source
+

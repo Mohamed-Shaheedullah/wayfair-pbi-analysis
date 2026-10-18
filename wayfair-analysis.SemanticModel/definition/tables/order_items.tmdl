@@ -48,6 +48,14 @@ table order_items
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
+	column total_price = order_items[quantity] * order_items[unit_price]
+		lineageTag: 67a4e810-3ecd-4eac-b3d7-4a6820d080c7
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	partition order_items = m
 		mode: import
 		source =
